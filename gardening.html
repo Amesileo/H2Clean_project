@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garden & Landscaping Services | H2Clean East Anglia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .heading-font { font-family: 'Playfair Display', sans-serif; }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white">
+
+    <!-- NAV -->
+    <nav class="fixed top-0 w-full bg-zinc-950/95 backdrop-blur-lg z-50 border-b border-zinc-800">
+        <div class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-x-4">
+                <div class="text-4xl">💧</div>
+                <div class="heading-font text-3xl font-bold tracking-tighter">H2Clean</div>
+            </a>
+            <div class="hidden md:flex gap-x-8 text-sm uppercase tracking-widest font-medium">
+                <a href="index.html#services" class="hover:text-sky-400 transition-colors">Services</a>
+                <a href="index.html#gallery" class="hover:text-sky-400 transition-colors">Gallery</a>
+                <a href="index.html#testimonials" class="hover:text-sky-400 transition-colors">Reviews</a>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="https://wa.me/447508877860" target="_blank" rel="noopener" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 px-5 py-3.5 rounded-2xl font-semibold transition-all">
+                    <i class="fab fa-whatsapp text-lg"></i>
+                    <span class="hidden sm:inline">WhatsApp</span>
+                </a>
+                <a href="tel:07508877860" class="flex items-center gap-3 bg-sky-600 hover:bg-sky-500 px-7 py-3.5 rounded-2xl font-semibold transition-all">
+                    <i class="fas fa-phone"></i>
+                    <span>07508 877860</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="pt-40 pb-20 px-6 bg-gradient-to-b from-zinc-900 to-zinc-950">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="text-6xl mb-6">🌿</div>
+            <h1 class="heading-font text-5xl md:text-6xl font-bold tracking-tighter mb-6">
+                Garden &amp; Landscaping<br>Services
+            </h1>
+            <p class="text-xl text-zinc-300 max-w-2xl mx-auto mb-10">
+                At H2Clean we pride ourselves in creating beautiful outdoor spaces for our clients. Whether it's a general tidy up or a full makeover, we can do it all!
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="tel:07508877860" class="inline-flex items-center justify-center gap-3 bg-white text-zinc-900 px-10 py-5 rounded-3xl text-lg font-semibold hover:bg-amber-300 transition-all">
+                    <i class="fas fa-phone-volume"></i>
+                    Call for a FREE Quote
+                </a>
+                <a href="https://wa.me/447508877860" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-500 text-white px-10 py-5 rounded-3xl text-lg font-semibold transition-all">
+                    <i class="fab fa-whatsapp text-xl"></i>
+                    WhatsApp Us
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- VALUES -->
+    <section class="py-16 border-y border-zinc-800 bg-zinc-900">
+        <div class="max-w-5xl mx-auto px-6 grid md:grid-cols-3 gap-10 text-center">
+            <div>
+                <div class="text-3xl mb-3">🏆</div>
+                <h3 class="font-semibold text-lg mb-2">Quality First</h3>
+                <p class="text-zinc-400 text-sm">We deliver exceptional results in everything we do, ensuring your satisfaction at every step.</p>
+            </div>
+            <div>
+                <div class="text-3xl mb-3">🌱</div>
+                <h3 class="font-semibold text-lg mb-2">Expert Care</h3>
+                <p class="text-zinc-400 text-sm">Our experienced team brings skill and passion to every project, no matter the size.</p>
+            </div>
+            <div>
+                <div class="text-3xl mb-3">✅</div>
+                <h3 class="font-semibold text-lg mb-2">Real Results</h3>
+                <p class="text-zinc-400 text-sm">Proven outcomes that speak for themselves and make a meaningful difference for your home or business.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES LIST -->
+    <section class="py-28 px-6">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="heading-font text-4xl font-bold mb-4 text-center">What We Offer</h2>
+            <p class="text-zinc-400 text-center mb-16">A full range of garden and landscaping services for residential and commercial customers across Ipswich and Suffolk.</p>
+
+            <div class="grid md:grid-cols-2 gap-6">
+
+                <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
+                    <h3 class="text-xl font-semibold mb-5 flex items-center gap-3"><span class="text-2xl">🌾</span> Lawn Care</h3>
+                    <ul class="space-y-3 text-zinc-300">
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Lawn mowing</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Strimming and edging</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Lawn feeding and fertilising</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Lawn repair and re-seeding</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Turf &amp; artificial grass installation</li>
+                    </ul>
+                </div>
+
+                <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
+                    <h3 class="text-xl font-semibold mb-5 flex items-center gap-3"><span class="text-2xl">🌳</span> Planting &amp; Clearance</h3>
+                    <ul class="space-y-3 text-zinc-300">
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Pruning or removal of shrubs, bushes &amp; trees</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> One-off &amp; seasonal tidy-ups</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Raised beds</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Decorative gravel</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Low maintenance garden conversions</li>
+                    </ul>
+                </div>
+
+                <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
+                    <h3 class="text-xl font-semibold mb-5 flex items-center gap-3"><span class="text-2xl">✨</span> Full Transformations</h3>
+                    <ul class="space-y-3 text-zinc-300">
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Complete garden redesigns</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Hard landscaping &amp; paving</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Bespoke outdoor spaces</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Before &amp; after documentation</li>
+                    </ul>
+                </div>
+
+                <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
+                    <h3 class="text-xl font-semibold mb-5 flex items-center gap-3"><span class="text-2xl">🏢</span> Commercial Grounds</h3>
+                    <ul class="space-y-3 text-zinc-300">
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Office &amp; retail properties</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Apartment complexes</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Schools &amp; nurseries</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-400 mt-0.5">✓</span> Regular maintenance contracts</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-24 bg-zinc-900 text-center px-6">
+        <div class="max-w-2xl mx-auto">
+            <h2 class="heading-font text-4xl font-bold mb-4">Ready to Transform Your Garden?</h2>
+            <p class="text-zinc-400 mb-10">Call us today for a free, no-obligation quote. We serve Ipswich, Suffolk and across East Anglia.</p>
+            <a href="tel:07508877860" class="inline-flex items-center gap-3 bg-sky-600 hover:bg-sky-500 px-12 py-6 rounded-3xl text-xl font-semibold transition-all">
+                <i class="fas fa-phone-volume"></i>
+                07508 877860
+            </a>
+            <p class="mt-6 text-sm text-emerald-400 flex items-center justify-center gap-2">
+                <span class="inline-block w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span>
+                SAME &amp; NEXT DAY QUOTES AVAILABLE
+            </p>
+        </div>
+    </section>
+
+    <footer class="bg-black py-16 text-center text-zinc-500 text-sm">
+        H2Clean • 07508 877860 • Serving Suffolk
+    </footer>
+
+    <script>
+        gsap.from("h1", { opacity: 0, y: 40, duration: 1, ease: "power4.out" });
+    </script>
+</body>
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H2Clean — Admin Upload</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = 'https://ltuydrjjwufutabtyxny.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0dXlkcmpqd3VmdXRhYnR5eG55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NTc1MDMsImV4cCI6MjA5NjMzMzUwM30.PhAZO0rhYkopAn7clG7eeQzQ40AGBKwG2dq7xDUG1oc';
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Returns a client with the current auth token explicitly set
+        async function authedClient() {
+            const { data: { session } } = await supabase.auth.getSession();
+            return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                global: { headers: { Authorization: `Bearer ${session.access_token}` } }
+            });
+        }
+
+        const loginScreen   = document.getElementById('login-screen');
+        const adminScreen   = document.getElementById('admin-screen');
+        const userEmailEl   = document.getElementById('user-email');
+        const jobSelect     = document.getElementById('job-select');
+        const newJobFields  = document.getElementById('new-job-fields');
+
+        async function init() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) showAdmin(session.user);
+            else loginScreen.classList.remove('hidden');
+        }
+
+        function showAdmin(user) {
+            loginScreen.classList.add('hidden');
+            adminScreen.classList.remove('hidden');
+            userEmailEl.textContent = user.email;
+            loadUrgencySettings();
+            loadJobOptions();
+            loadGallery();
+        }
+
+        // ── Login ────────────────────────────────────────────────────────────
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const loginError = document.getElementById('login-error');
+            const btn = document.getElementById('login-btn');
+            btn.disabled = true;
+            btn.textContent = 'Signing in…';
+            loginError.classList.add('hidden');
+
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+            });
+
+            if (error) {
+                loginError.textContent = error.message;
+                loginError.classList.remove('hidden');
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
+                return;
+            }
+            showAdmin(data.user);
+        });
+
+        document.getElementById('signout-btn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            adminScreen.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+        });
+
+        // ── Job selector ─────────────────────────────────────────────────────
+        async function loadJobOptions() {
+            const { data: jobs } = await supabase
+                .from('jobs')
+                .select('id, name, location')
+                .order('created_at', { ascending: false });
+
+            jobSelect.innerHTML = `<option value="new">+ Create new job</option>`;
+            (jobs || []).forEach(j => {
+                const opt = document.createElement('option');
+                opt.value = j.id;
+                opt.textContent = j.location ? `${j.name} — ${j.location}` : j.name;
+                jobSelect.appendChild(opt);
+            });
+        }
+
+        jobSelect.addEventListener('change', () => {
+            newJobFields.classList.toggle('hidden', jobSelect.value !== 'new');
+        });
+
+        // ── Upload ───────────────────────────────────────────────────────────
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileInput    = document.getElementById('file-input');
+            const captionInput = document.getElementById('caption-input');
+            const status       = document.getElementById('status');
+            const files        = Array.from(fileInput.files);
+
+            if (!files.length) return;
+
+            // Check auth state
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                adminScreen.classList.add('hidden');
+                loginScreen.classList.remove('hidden');
+                return;
+            }
+
+            status.textContent = 'Uploading…';
+            status.className = 'text-sky-400 text-sm mt-4';
+
+            const authed = await authedClient();
+
+            // Resolve or create job
+            let jobId = jobSelect.value;
+            if (jobId === 'new') {
+                const jobName     = document.getElementById('job-name').value.trim();
+                const jobLocation = document.getElementById('job-location').value.trim();
+                if (!jobName) {
+                    status.textContent = 'Please enter a job name.';
+                    status.className = 'text-red-400 text-sm mt-4';
+                    return;
+                }
+                const { data: newJob, error: jobErr } = await authed
+                    .from('jobs')
+                    .insert({ name: jobName, location: jobLocation || null, created_at: new Date().toISOString() })
+                    .select('id')
+                    .single();
+                if (jobErr) {
+                    status.textContent = `Failed to create job: ${jobErr.message}`;
+                    status.className = 'text-red-400 text-sm mt-4';
+                    return;
+                }
+                jobId = newJob.id;
+                await loadJobOptions();
+                jobSelect.value = jobId;
+                newJobFields.classList.add('hidden');
+                document.getElementById('job-name').value = '';
+                document.getElementById('job-location').value = '';
+            }
+
+            let successCount = 0;
+            for (const file of files) {
+                const ext      = file.name.split('.').pop();
+                const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+                const { error: uploadError } = await supabase.storage
+                    .from('gallery')
+                    .upload(fileName, file, { contentType: file.type });
+
+                if (uploadError) {
+                    status.textContent = `Upload failed: ${uploadError.message}`;
+                    status.className = 'text-red-400 text-sm mt-4';
+                    return;
+                }
+
+                const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(fileName);
+
+                const { error: dbError } = await authed
+                    .from('gallery_images')
+                    .insert({ url: publicUrl, caption: captionInput.value || null, job_id: jobId, created_at: new Date().toISOString() });
+
+                if (dbError) {
+                    status.textContent = `DB insert failed: ${dbError.message}`;
+                    status.className = 'text-red-400 text-sm mt-4';
+                    return;
+                }
+                successCount++;
+            }
+
+            status.textContent = `✅ ${successCount} photo(s) uploaded successfully!`;
+            status.className = 'text-emerald-400 text-sm mt-4';
+            fileInput.value = '';
+            captionInput.value = '';
+            loadGallery();
+        });
+
+        // ── Gallery ──────────────────────────────────────────────────────────
+        async function loadGallery() {
+            const container = document.getElementById('current-gallery');
+            container.innerHTML = '<p class="text-zinc-500 text-sm">Loading…</p>';
+
+            const { data: jobs } = await supabase
+                .from('jobs')
+                .select('id, name, location, gallery_images(id, url, caption)')
+                .order('created_at', { ascending: false });
+
+            if (!jobs?.length || !jobs.some(j => j.gallery_images?.length)) {
+                container.innerHTML = '<p class="text-zinc-500 text-sm">No photos uploaded yet.</p>';
+                return;
+            }
+
+            container.innerHTML = jobs
+                .filter(j => j.gallery_images?.length)
+                .map(job => `
+                    <div class="mb-10">
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <h3 class="font-semibold text-white">${job.name}</h3>
+                                ${job.location ? `<p class="text-xs text-zinc-500">${job.location}</p>` : ''}
+                            </div>
+                            <button data-job-id="${job.id}" class="delete-job-btn text-xs text-red-400 hover:text-red-300 border border-red-800 hover:border-red-600 px-3 py-1 rounded-lg transition-colors">
+                                Delete entire job
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            ${job.gallery_images.map(img => `
+                                <div class="relative group">
+                                    <img src="${img.url}" alt="${img.caption || ''}" class="w-full aspect-square object-cover rounded-xl">
+                                    ${img.caption ? `<p class="text-xs text-zinc-400 mt-1 truncate">${img.caption}</p>` : ''}
+                                    <button data-img-id="${img.id}" data-img-path="${img.url.split('/gallery/')[1]}" class="delete-img-btn absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                        Delete
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+
+            // Delete single image
+            container.querySelectorAll('.delete-img-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!confirm('Delete this photo?')) return;
+                    const db = await authedClient();
+                    await db.storage.from('gallery').remove([btn.dataset.imgPath]);
+                    await db.from('gallery_images').delete().eq('id', btn.dataset.imgId);
+                    loadGallery();
+                });
+            });
+
+            // Delete entire job (cascades to images via DB, but we also remove files from storage)
+            container.querySelectorAll('.delete-job-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!confirm('Delete this entire job and all its photos? This cannot be undone.')) return;
+                    const jobId = btn.dataset.jobId;
+                    const db = await authedClient();
+                    const { data: imgs } = await db.from('gallery_images').select('url').eq('job_id', jobId);
+                    const paths = (imgs || []).map(i => i.url.split('/gallery/')[1]);
+                    if (paths.length) await db.storage.from('gallery').remove(paths);
+                    await db.from('jobs').delete().eq('id', jobId);
+                    await loadJobOptions();
+                    loadGallery();
+                });
+            });
+        }
+
+        // ── Urgency banner ───────────────────────────────────────────────────
+        async function loadUrgencySettings() {
+            const { data } = await supabase.from('settings').select('urgency_enabled, urgency_message').eq('id', 'main').single();
+            if (!data) return;
+            setToggle(data.urgency_enabled);
+            document.getElementById('urgency-message-input').value = data.urgency_message || '';
+        }
+
+        function setToggle(enabled) {
+            const btn   = document.getElementById('urgency-toggle');
+            const knob  = document.getElementById('urgency-knob');
+            btn.setAttribute('aria-pressed', enabled);
+            btn.classList.toggle('bg-emerald-500', enabled);
+            btn.classList.toggle('bg-zinc-700', !enabled);
+            knob.classList.toggle('translate-x-6', enabled);
+            knob.classList.toggle('translate-x-1', !enabled);
+        }
+
+        document.getElementById('urgency-toggle').addEventListener('click', function() {
+            const current = this.getAttribute('aria-pressed') === 'true';
+            setToggle(!current);
+        });
+
+        document.getElementById('urgency-save').addEventListener('click', async () => {
+            const status  = document.getElementById('urgency-status');
+            const enabled = document.getElementById('urgency-toggle').getAttribute('aria-pressed') === 'true';
+            const message = document.getElementById('urgency-message-input').value.trim();
+            const db = await authedClient();
+            const { error } = await db.from('settings').upsert({ id: 'main', urgency_enabled: enabled, urgency_message: message });
+            if (error) {
+                status.textContent = `Error: ${error.message}`;
+                status.className = 'text-sm text-red-400';
+            } else {
+                status.textContent = '✅ Saved!';
+                status.className = 'text-sm text-emerald-400';
+                setTimeout(() => status.textContent = '', 3000);
+            }
+        });
+
+        init();
+    </script>
+</head>
+<body class="bg-zinc-950 text-white min-h-screen p-8">
+
+    <!-- Login screen -->
+    <div id="login-screen" class="hidden max-w-sm mx-auto mt-20">
+        <h1 class="text-3xl font-bold mb-2">H2Clean Admin</h1>
+        <p class="text-zinc-400 text-sm mb-8">Sign in to manage the photo gallery.</p>
+        <form id="login-form" class="bg-zinc-900 rounded-2xl p-8 border border-zinc-800 space-y-5">
+            <div>
+                <label class="block text-sm font-medium text-zinc-300 mb-2">Email</label>
+                <input id="email" type="email" required autocomplete="email"
+                    class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-zinc-300 mb-2">Password</label>
+                <input id="password" type="password" required autocomplete="current-password"
+                    class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500">
+            </div>
+            <p id="login-error" class="hidden text-red-400 text-sm"></p>
+            <button id="login-btn" type="submit"
+                class="w-full bg-sky-600 hover:bg-sky-500 transition-colors py-4 rounded-xl font-semibold disabled:opacity-50">
+                Sign In
+            </button>
+        </form>
+    </div>
+
+    <!-- Admin screen -->
+    <div id="admin-screen" class="hidden max-w-3xl mx-auto">
+        <div class="flex justify-between items-center mb-2">
+            <h1 class="text-3xl font-bold">H2Clean — Photo Upload</h1>
+            <button id="signout-btn" class="text-sm text-zinc-400 hover:text-white transition-colors">Sign out</button>
+        </div>
+        <p class="text-zinc-400 mb-2 text-sm">Signed in as <span id="user-email" class="text-zinc-300"></span></p>
+
+        <!-- Delete warning -->
+        <div class="bg-amber-950 border border-amber-700 text-amber-300 rounded-xl px-5 py-4 text-sm mb-8 flex gap-3">
+            <span class="text-lg leading-none">⚠️</span>
+            <div>
+                <strong class="block mb-1">Always delete photos using this page</strong>
+                Use the <strong>Delete</strong> buttons below to remove everything in one go. If you need assistance, email <a href="mailto:support@williamjamescreative.co.uk" class="underline hover:text-amber-200">support@williamjamescreative.co.uk</a>.
+            </div>
+        </div>
+
+        <!-- Urgency banner control -->
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 mb-8">
+            <h2 class="text-lg font-semibold mb-1">Urgency Banner</h2>
+            <p class="text-zinc-500 text-sm mb-6">When enabled, a prominent banner appears at the top of the website to drive enquiries.</p>
+            <div class="flex items-center justify-between mb-6">
+                <span class="text-sm font-medium text-zinc-300">Show banner on website</span>
+                <button id="urgency-toggle" type="button"
+                    class="relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none bg-zinc-700"
+                    aria-pressed="false">
+                    <span id="urgency-knob" class="inline-block h-5 w-5 transform rounded-full bg-white transition-transform translate-x-1"></span>
+                </button>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-zinc-300 mb-2">Banner message</label>
+                <input id="urgency-message-input" type="text"
+                    placeholder="Summer is filling up fast — book your slot now!"
+                    class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500 mb-4">
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="urgency-save" type="button"
+                    class="bg-sky-600 hover:bg-sky-500 transition-colors px-6 py-2.5 rounded-xl text-sm font-semibold">
+                    Save
+                </button>
+                <p id="urgency-status" class="text-sm"></p>
+            </div>
+        </div>
+
+        <!-- Upload form -->
+        <form id="upload-form" class="bg-zinc-900 rounded-2xl p-8 border border-zinc-800 space-y-6 mb-14">
+            <h2 class="text-lg font-semibold">Upload Photos</h2>
+
+            <!-- Job selector -->
+            <div>
+                <label class="block text-sm font-medium text-zinc-300 mb-2">Job</label>
+                <select id="job-select"
+                    class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500">
+                    <option value="new">+ Create new job</option>
+                </select>
+            </div>
+
+            <!-- New job fields -->
+            <div id="new-job-fields" class="space-y-4 pl-4 border-l-2 border-zinc-700">
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-2">Job name <span class="text-red-400">*</span></label>
+                    <input id="job-name" type="text" placeholder="e.g. Driveway pressure wash"
+                        class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-2">Location <span class="text-zinc-500">(optional)</span></label>
+                    <input id="job-location" type="text" placeholder="e.g. Ipswich"
+                        class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500">
+                </div>
+            </div>
+
+            <!-- Files -->
+            <div>
+                <label class="block text-sm font-medium text-zinc-300 mb-2">Select Photos</label>
+                <input id="file-input" type="file" accept="image/*" multiple required
+                    class="w-full text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-sky-600 file:text-white file:cursor-pointer cursor-pointer">
+                <p class="text-xs text-zinc-500 mt-1">JPG, PNG, WebP — you can select multiple at once.</p>
+            </div>
+
+            <!-- Caption -->
+            <div>
+                <label class="block text-sm font-medium text-zinc-300 mb-2">Caption <span class="text-zinc-500">(optional — applies to all photos in this upload)</span></label>
+                <input id="caption-input" type="text" placeholder="e.g. Before and after"
+                    class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500">
+            </div>
+
+            <button type="submit" class="w-full bg-sky-600 hover:bg-sky-500 transition-colors py-4 rounded-xl font-semibold">
+                Upload Photos
+            </button>
+            <p id="status"></p>
+        </form>
+
+        <!-- Current gallery -->
+        <h2 class="text-xl font-semibold mb-6">Current Gallery</h2>
+        <div id="current-gallery"></div>
+    </div>
+
+</body>
+</html>

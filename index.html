@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H2Clean | Professional Exterior Cleaning East Anglia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+        
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .heading-font { font-family: 'Playfair Display', sans-serif; }
+        h1.heading-font { font-size: clamp(2.5rem, 8vw, 5rem) !important; line-height: 1; }
+
+        .hero-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://picsum.photos/id/1015/1920/1080');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .service-card {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s;
+        }
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+        }
+        .services-dropdown { display: none; }
+        .services-dropdown.open { display: block; }
+        #mobile-menu { display: none; }
+        #mobile-menu.open { display: block; }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white">
+    <!-- Urgency banner -->
+    <div id="urgency-banner" class="hidden fixed top-0 left-0 right-0 z-[60] bg-gradient-to-r from-amber-500 to-orange-500 text-zinc-900 text-sm font-semibold text-center py-2.5 px-10">
+        <span id="urgency-message"></span>
+        <a href="tel:07508877860" class="ml-3 underline hover:no-underline">Call now →</a>
+        <button id="urgency-dismiss" class="absolute right-4 top-1/2 -translate-y-1/2 opacity-60 hover:opacity-100 text-lg leading-none">✕</button>
+    </div>
+
+    <!-- NAV -->
+    <nav id="main-nav" class="fixed top-0 left-0 right-0 bg-zinc-950/95 backdrop-blur-lg z-50 border-b border-zinc-800">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <!-- Logo -->
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="text-3xl">💧</div>
+                <div class="heading-font text-2xl font-bold tracking-tighter">H2Clean</div>
+            </a>
+
+            <!-- Desktop nav -->
+            <div class="hidden lg:flex items-center gap-x-8 text-sm uppercase tracking-widest font-medium">
+                <!-- Services dropdown -->
+                <div class="relative">
+                    <button id="services-btn" class="flex items-center gap-1 hover:text-sky-400 transition-colors">
+                        Services <i class="fas fa-chevron-down text-xs ml-1 transition-transform duration-200" id="services-chevron"></i>
+                    </button>
+                    <div id="services-dropdown" class="services-dropdown absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-zinc-900 border border-zinc-700 rounded-2xl py-2 w-52 shadow-xl">
+                        <a href="pressure-washing.html" class="flex items-center gap-3 px-5 py-3 hover:bg-zinc-800 transition-colors text-sm normal-case tracking-normal">
+                            <span>🧼</span> Pressure Washing
+                        </a>
+                        <a href="gardening.html" class="flex items-center gap-3 px-5 py-3 hover:bg-zinc-800 transition-colors text-sm normal-case tracking-normal">
+                            <span>🌿</span> Garden &amp; Landscaping
+                        </a>
+                        <a href="waste-clearance.html" class="flex items-center gap-3 px-5 py-3 hover:bg-zinc-800 transition-colors text-sm normal-case tracking-normal">
+                            <span>🗑️</span> Waste Clearance
+                        </a>
+                    </div>
+                </div>
+                <a href="#gallery" class="hover:text-sky-400 transition-colors">Gallery</a>
+                <a href="#testimonials" class="hover:text-sky-400 transition-colors">Reviews</a>
+            </div>
+
+            <!-- Desktop CTA buttons -->
+            <div class="hidden lg:flex items-center gap-3">
+                <a href="https://wa.me/447508877860" target="_blank" rel="noopener" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all">
+                    <i class="fab fa-whatsapp text-base"></i> WhatsApp
+                </a>
+                <a href="tel:07508877860" class="flex items-center gap-2 bg-sky-600 hover:bg-sky-500 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all">
+                    <i class="fas fa-phone"></i> 07508 877860
+                </a>
+            </div>
+
+            <!-- Mobile: contact icons + hamburger -->
+            <div class="flex lg:hidden items-center gap-3">
+                <a href="https://wa.me/447508877860" target="_blank" rel="noopener" class="w-10 h-10 flex items-center justify-center bg-emerald-600 rounded-xl">
+                    <i class="fab fa-whatsapp text-lg"></i>
+                </a>
+                <a href="tel:07508877860" class="w-10 h-10 flex items-center justify-center bg-sky-600 rounded-xl">
+                    <i class="fas fa-phone"></i>
+                </a>
+                <button id="hamburger" class="w-10 h-10 flex items-center justify-center text-white">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="lg:hidden border-t border-zinc-800 bg-zinc-950">
+            <div class="px-6 py-4 space-y-1">
+                <p class="text-xs text-zinc-500 uppercase tracking-widest mb-3">Services</p>
+                <a href="pressure-washing.html" class="flex items-center gap-3 py-3 border-b border-zinc-800 text-sm">
+                    <span>🧼</span> Pressure Washing
+                </a>
+                <a href="gardening.html" class="flex items-center gap-3 py-3 border-b border-zinc-800 text-sm">
+                    <span>🌿</span> Garden &amp; Landscaping
+                </a>
+                <a href="waste-clearance.html" class="flex items-center gap-3 py-3 border-b border-zinc-800 text-sm">
+                    <span>🗑️</span> Waste Clearance
+                </a>
+                <a href="#gallery" class="flex items-center gap-3 py-3 border-b border-zinc-800 text-sm" onclick="document.getElementById('mobile-menu').classList.remove('open')">
+                    <span>📷</span> Gallery
+                </a>
+                <a href="#testimonials" class="flex items-center gap-3 py-3 text-sm" onclick="document.getElementById('mobile-menu').classList.remove('open')">
+                    <span>⭐</span> Reviews
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section id="hero" class="hero-bg min-h-screen flex items-center" style="padding-top:160px;transition:padding-top 0.3s ease;">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h1 class="heading-font font-bold tracking-tighter mb-6">
+                East Anglia's<br>Premium Exterior<br>Cleaning Service
+            </h1>
+            <p class="text-xl text-zinc-300 max-w-xl mx-auto mb-10">
+                Pressure washing • Gutter cleaning • Window &amp; conservatory cleaning • Garden care
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="tel:07508877860" class="group bg-white text-zinc-900 px-12 py-6 rounded-3xl text-xl font-semibold flex items-center justify-center gap-4 hover:bg-amber-300 transition-all">
+                    <i class="fas fa-phone-volume text-2xl"></i>
+                    <span>Call for FREE Quote</span>
+                </a>
+                <a href="https://wa.me/447508877860" target="_blank" rel="noopener" class="bg-emerald-600 hover:bg-emerald-500 px-12 py-6 rounded-3xl text-xl font-semibold flex items-center justify-center gap-4 transition-all">
+                    <i class="fab fa-whatsapp text-2xl"></i>
+                    <span>WhatsApp Us</span>
+                </a>
+            </div>
+            <div class="mt-8 text-sm text-emerald-400 flex items-center justify-center gap-2">
+                <span class="inline-block w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span>
+                SAME &amp; NEXT DAY QUOTES AVAILABLE
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="services" class="py-20 bg-zinc-900">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="heading-font text-center text-4xl md:text-5xl font-bold mb-4">Our Services</h2>
+            <p class="text-center text-zinc-400 mb-14">Professional exterior cleaning and grounds maintenance across Suffolk</p>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <div class="service-card bg-zinc-950 rounded-3xl border border-zinc-800 flex flex-col overflow-hidden">
+                    <div class="p-8 flex-1">
+                        <div class="text-5xl mb-5">🧼</div>
+                        <h3 class="text-xl font-semibold mb-3">Pressure Washing</h3>
+                        <p class="text-zinc-400 text-sm leading-relaxed mb-5">Driveways, patios, brickwork, decking &amp; roofs — from a basic clean to full black spot removal. Bronze to Platinum packages.</p>
+                        <ul class="text-zinc-500 text-sm space-y-2">
+                            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Driveways &amp; patios</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Brickwork &amp; decking</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Re-sanding &amp; biocide treatment</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Black spot removal</li>
+                        </ul>
+                    </div>
+                    <div class="px-8 pb-8 flex flex-wrap gap-3">
+                        <a href="tel:07508877860" class="flex-1 min-w-[120px] inline-flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-500 text-white py-3 rounded-xl text-sm font-semibold transition-colors whitespace-nowrap">
+                            <i class="fas fa-phone text-xs"></i> Call Now
+                        </a>
+                        <a href="pressure-washing.html" class="flex-1 min-w-[120px] inline-flex items-center justify-center gap-2 border border-zinc-700 hover:border-zinc-400 text-zinc-300 hover:text-white py-3 rounded-xl text-sm font-semibold transition-colors whitespace-nowrap">
+                            Learn More →
+                        </a>
+                    </div>
+                </div>
+
+                <div class="service-card bg-zinc-950 rounded-3xl border border-zinc-800 flex flex-col overflow-hidden">
+                    <div class="p-8 flex-1">
+                        <div class="text-5xl mb-5">🌿</div>
+                        <h3 class="text-xl font-semibold mb-3">Garden &amp; Landscaping</h3>
+                        <p class="text-zinc-400 text-sm leading-relaxed mb-5">From seasonal tidy-ups and lawn care to full garden transformations and commercial grounds maintenance.</p>
+                        <ul class="text-zinc-500 text-sm space-y-2">
+                            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Lawn mowing, feeding &amp; repair</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Turf &amp; artificial grass</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Pruning, shrubs &amp; trees</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Full garden transformations</li>
+                        </ul>
+                    </div>
+                    <div class="px-8 pb-8 flex flex-wrap gap-3">
+                        <a href="tel:07508877860" class="flex-1 min-w-[120px] inline-flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-500 text-white py-3 rounded-xl text-sm font-semibold transition-colors whitespace-nowrap">
+                            <i class="fas fa-phone text-xs"></i> Call Now
+                        </a>
+                        <a href="gardening.html" class="flex-1 min-w-[120px] inline-flex items-center justify-center gap-2 border border-zinc-700 hover:border-zinc-400 text-zinc-300 hover:text-white py-3 rounded-xl text-sm font-semibold transition-colors whitespace-nowrap">
+                            Learn More →
+                        </a>
+                    </div>
+                </div>
+
+                <div class="service-card bg-zinc-950 rounded-3xl border border-zinc-800 flex flex-col overflow-hidden">
+                    <div class="p-8 flex-1">
+                        <div class="text-5xl mb-5">🗑️</div>
+                        <h3 class="text-xl font-semibold mb-3">Waste Clearance</h3>
+                        <p class="text-zinc-400 text-sm leading-relaxed mb-5">Fast, responsible clearance for homes and businesses. Priced per job — call for a free quote.</p>
+                        <ul class="text-zinc-500 text-sm space-y-2">
+                            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Garden &amp; green waste</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Household &amp; garage clearances</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Builder &amp; trade waste</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Commercial site clearances</li>
+                        </ul>
+                    </div>
+                    <div class="px-8 pb-8 flex flex-wrap gap-3">
+                        <a href="tel:07508877860" class="flex-1 min-w-[120px] inline-flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-500 text-white py-3 rounded-xl text-sm font-semibold transition-colors whitespace-nowrap">
+                            <i class="fas fa-phone text-xs"></i> Call Now
+                        </a>
+                        <a href="waste-clearance.html" class="flex-1 min-w-[120px] inline-flex items-center justify-center gap-2 border border-zinc-700 hover:border-zinc-400 text-zinc-300 hover:text-white py-3 rounded-xl text-sm font-semibold transition-colors whitespace-nowrap">
+                            Learn More →
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery -->
+    <section id="gallery" class="py-28">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="heading-font text-center text-5xl font-bold mb-4">Real Results</h2>
+            <p class="text-center text-zinc-400 mb-6">Before &amp; after photos from jobs across Ipswich and Suffolk</p>
+            <!-- Filter bar -->
+            <div id="gallery-filters" class="hidden flex-wrap gap-2 justify-center mb-10"></div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="supabase-gallery">
+                <p class="col-span-full text-center text-zinc-500 py-12">Loading gallery…</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div id="lightbox" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:#000;overflow:hidden;align-items:center;justify-content:center;">
+        <button id="lightbox-close" style="position:absolute;top:1rem;right:1rem;z-index:10" class="text-white bg-zinc-800 hover:bg-zinc-700 rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors">✕</button>
+        <button id="lightbox-prev" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);z-index:10;" class="text-white bg-zinc-800 hover:bg-zinc-700 rounded-full w-10 h-10 flex items-center justify-center text-2xl transition-colors hidden">‹</button>
+        <img id="lightbox-img" src="" alt="" style="width:90vw;height:85vh;object-fit:contain;border-radius:1rem;outline:none;transition:opacity 0.2s ease;">
+        <button id="lightbox-next" style="position:absolute;right:1rem;top:50%;transform:translateY(-50%);z-index:10;" class="text-white bg-zinc-800 hover:bg-zinc-700 rounded-full w-10 h-10 flex items-center justify-center text-2xl transition-colors hidden">›</button>
+        <p id="lightbox-caption" style="position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);white-space:nowrap;" class="text-sm text-zinc-300 bg-zinc-900/80 px-4 py-2 rounded-full hidden"></p>
+    </div>
+
+    <footer class="bg-black py-12 text-zinc-500 text-sm border-t border-zinc-800">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center md:items-start justify-center md:justify-between gap-8">
+            <!-- Left/centre: site info -->
+            <div class="text-center md:text-left">
+                <p>H2Clean • 07508 877860 • Serving Suffolk</p>
+                <a href="admin.html" class="text-zinc-700 hover:text-zinc-500 text-xs transition-colors mt-2 inline-block">Admin</a>
+            </div>
+            <!-- Right: crafted by logo -->
+            <a href="https://williamjamescreative.co.uk" target="_blank" rel="noopener" class="opacity-60 hover:opacity-100 transition-opacity">
+                <img src="/Crafted-by-William-James-Creative-Ditigal-dark.svg" alt="Crafted by William James Creative Digital" class="w-full max-w-[200px]">
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        gsap.registerPlugin();
+        gsap.from(".heading-font", {opacity: 0, y: 60, duration: 1.2, ease: "power4.out"});
+
+        // Hamburger
+        const hamburger   = document.getElementById('hamburger');
+        const mobileMenu  = document.getElementById('mobile-menu');
+        hamburger.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+            const icon = hamburger.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+
+        // Services dropdown
+        const servicesBtn      = document.getElementById('services-btn');
+        const servicesDropdown = document.getElementById('services-dropdown');
+        const servicesChevron  = document.getElementById('services-chevron');
+        servicesBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            servicesDropdown.classList.toggle('open');
+            servicesChevron.style.transform = servicesDropdown.classList.contains('open') ? 'rotate(180deg)' : '';
+        });
+        document.addEventListener('click', () => {
+            servicesDropdown.classList.remove('open');
+            servicesChevron.style.transform = '';
+        });
+    </script>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        const supabase = createClient(
+            'https://ltuydrjjwufutabtyxny.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0dXlkcmpqd3VmdXRhYnR5eG55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NTc1MDMsImV4cCI6MjA5NjMzMzUwM30.PhAZO0rhYkopAn7clG7eeQzQ40AGBKwG2dq7xDUG1oc'
+        );
+
+        const banner   = document.getElementById('urgency-banner');
+        const msgEl    = document.getElementById('urgency-message');
+        const dismiss  = document.getElementById('urgency-dismiss');
+        const nav      = document.getElementById('main-nav');
+
+        const { data } = await supabase.from('settings').select('urgency_enabled, urgency_message').eq('id', 'main').single();
+
+        function applyOffsets() {
+            requestAnimationFrame(() => {
+                const bannerH = banner.classList.contains('hidden') ? 0 : banner.offsetHeight;
+                nav.style.top = bannerH + 'px';
+                requestAnimationFrame(() => {
+                    document.getElementById('hero').style.paddingTop = (bannerH + nav.offsetHeight) + 'px';
+                });
+            });
+        }
+
+        if (data?.urgency_enabled) {
+            msgEl.textContent = data.urgency_message;
+            banner.classList.remove('hidden');
+        }
+        applyOffsets();
+
+        dismiss.addEventListener('click', () => {
+            banner.classList.add('hidden');
+            applyOffsets();
+        });
+
+        // Recalculate on resize (banner may wrap/unwrap on different widths)
+        window.addEventListener('resize', applyOffsets);
+    </script>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const supabase = createClient(
+            'https://ltuydrjjwufutabtyxny.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0dXlkcmpqd3VmdXRhYnR5eG55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NTc1MDMsImV4cCI6MjA5NjMzMzUwM30.PhAZO0rhYkopAn7clG7eeQzQ40AGBKwG2dq7xDUG1oc'
+        );
+
+        const container = document.getElementById('supabase-gallery');
+
+        const [{ data: jobs }, { data: ungrouped }] = await Promise.all([
+            supabase
+                .from('jobs')
+                .select('id, name, location, gallery_images(id, url, caption)')
+                .order('created_at', { ascending: false }),
+            supabase
+                .from('gallery_images')
+                .select('id, url, caption')
+                .is('job_id', null)
+                .order('created_at', { ascending: false }),
+        ]);
+
+        const jobsWithPhotos = (jobs || []).filter(j => j.gallery_images?.length);
+        const hasContent = jobsWithPhotos.length || ungrouped?.length;
+
+        // Lightbox
+        const lightbox      = document.getElementById('lightbox');
+        const lightboxImg   = document.getElementById('lightbox-img');
+        const lightboxCap   = document.getElementById('lightbox-caption');
+        const lightboxClose = document.getElementById('lightbox-close');
+        const lightboxPrev  = document.getElementById('lightbox-prev');
+        const lightboxNext  = document.getElementById('lightbox-next');
+
+        let currentGroup = [];
+        let currentIndex = 0;
+
+        function showImage(index) {
+            const img = currentGroup[index];
+
+            // Instantly swap — fixed-size contain box means no layout shift between images
+            lightboxImg.style.opacity = '0';
+            lightboxImg.src = img.src;
+            lightboxImg.alt = img.alt;
+            lightboxImg.onload = () => { lightboxImg.style.opacity = '1'; };
+            // Fallback: if image is already cached onload won't fire
+            if (lightboxImg.complete && lightboxImg.naturalWidth) { lightboxImg.style.opacity = '1'; }
+
+            if (img.caption) {
+                lightboxCap.textContent = img.caption;
+                lightboxCap.classList.remove('hidden');
+            } else {
+                lightboxCap.classList.add('hidden');
+            }
+            lightboxPrev.classList.toggle('hidden', currentGroup.length <= 1);
+            lightboxNext.classList.toggle('hidden', currentGroup.length <= 1);
+            lightboxPrev.style.opacity = index === 0 ? '0.3' : '1';
+            lightboxNext.style.opacity = index === currentGroup.length - 1 ? '0.3' : '1';
+        }
+
+        function openLightbox(group, index) {
+            currentGroup = group;
+            currentIndex = index;
+            lightbox.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            showImage(currentIndex);
+        }
+
+        function closeLightbox() {
+            lightbox.style.display = 'none';
+            document.body.style.overflow = '';
+            lightboxImg.src = '';
+        }
+
+        function navigate(dir) {
+            const next = currentIndex + dir;
+            if (next < 0 || next >= currentGroup.length) return;
+            currentIndex = next;
+            showImage(currentIndex);
+        }
+
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightboxPrev.addEventListener('click', e => { e.stopPropagation(); navigate(-1); });
+        lightboxNext.addEventListener('click', e => { e.stopPropagation(); navigate(1); });
+        lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') navigate(-1);
+            if (e.key === 'ArrowRight') navigate(1);
+        });
+
+        function photoGrid(images, altFallback) {
+            return `<div class="grid grid-cols-2 md:grid-cols-4 gap-4 lightbox-group">
+                ${images.map((img, i) => `
+                    <div class="relative overflow-hidden rounded-2xl aspect-square bg-zinc-800 group cursor-pointer lightbox-trigger"
+                         data-index="${i}">
+                        <img src="${img.url}" alt="${img.caption || altFallback}" loading="lazy"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 pointer-events-none">
+                        ${img.caption ? `<div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 p-3 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity">${img.caption}</div>` : ''}
+                    </div>
+                `).join('')}
+            </div>`;
+        }
+
+        if (!hasContent) {
+            container.innerHTML = '<p class="col-span-full text-center text-zinc-500 py-12">Photos coming soon.</p>';
+        } else {
+            container.classList.remove('grid', 'grid-cols-2', 'md:grid-cols-4', 'gap-4');
+            container.classList.add('space-y-14');
+
+            // Build job sections
+            container.innerHTML = [
+                ...jobsWithPhotos.map((job, idx) => `
+                    <div data-job-id="${idx}">
+                        <div class="mb-5">
+                            <h3 class="text-xl font-semibold">${job.name}</h3>
+                            ${job.location ? `<p class="text-sm text-zinc-400">${job.location}</p>` : ''}
+                        </div>
+                        ${photoGrid(job.gallery_images, job.name)}
+                    </div>
+                `),
+                ungrouped?.length ? `<div data-job-id="ungrouped">${photoGrid(ungrouped, 'H2Clean result')}</div>` : '',
+            ].join('');
+
+            // Wire lightbox clicks
+            container.querySelectorAll('.lightbox-group').forEach(grid => {
+                const triggers = Array.from(grid.querySelectorAll('.lightbox-trigger'));
+                const imgs = triggers.map(el => {
+                    const img = el.querySelector('img');
+                    return { src: img.src, alt: img.alt, caption: el.querySelector('[class*="gradient"]')?.textContent || '' };
+                });
+                triggers.forEach((el, i) => {
+                    el.addEventListener('click', () => openLightbox(imgs, i));
+                });
+            });
+
+            // Build filter chips
+            const filtersBar = document.getElementById('gallery-filters');
+            if (jobsWithPhotos.length > 1) {
+                filtersBar.style.display = 'flex';
+
+                const allBtn = document.createElement('button');
+                allBtn.textContent = 'All jobs';
+                allBtn.dataset.filter = 'all';
+                allBtn.className = 'filter-chip px-4 py-1.5 rounded-full text-sm font-medium transition-colors bg-sky-600 text-white';
+                filtersBar.appendChild(allBtn);
+
+                jobsWithPhotos.forEach((job, idx) => {
+                    const btn = document.createElement('button');
+                    btn.textContent = job.name;
+                    btn.dataset.filter = String(idx);
+                    btn.className = 'filter-chip px-4 py-1.5 rounded-full text-sm font-medium transition-colors bg-zinc-800 text-zinc-300 hover:bg-zinc-700';
+                    filtersBar.appendChild(btn);
+                });
+
+                filtersBar.addEventListener('click', e => {
+                    const btn = e.target.closest('.filter-chip');
+                    if (!btn) return;
+                    const active = btn.dataset.filter;
+
+                    // Update chip styles
+                    filtersBar.querySelectorAll('.filter-chip').forEach(c => {
+                        const isActive = c.dataset.filter === active;
+                        c.className = `filter-chip px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${isActive ? 'bg-sky-600 text-white' : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'}`;
+                    });
+
+                    // Show/hide job sections
+                    container.querySelectorAll('[data-job-id]').forEach(section => {
+                        if (active === 'all' || section.dataset.jobId === active) {
+                            section.style.display = '';
+                        } else {
+                            section.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        }
+    </script>
+</body>
+</html>
